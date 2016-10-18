@@ -33,7 +33,7 @@ class User:
             with open(USERS_FILE, 'wb') as users_file:
                 text = ''
                 for user in users_list:
-                    text += ' '.join(str(key) + '=' + str(value)
+                    text += ' '.join("{}={}".format(key, value)
                                      for key, value in user.items()) + "|"
                 users_file.write(text.encode())
         else:
@@ -45,7 +45,6 @@ class User:
         return_list = []
         with open(USERS_FILE, 'rb') as users_file:
             data = users_file.read().decode()
-            print(data.split('|'))
             for user_data in data.split('|'):
                 if user_data:
                     user = {}
@@ -53,16 +52,18 @@ class User:
                         if _:
                             splitted_param = _.split('=')
                             try:
+                                if splitted_param[1] == 'False':
+                                    splitted_param[1] = False
+                                elif splitted_param[1] == 'True':
+                                    splitted_param[1] = True
                                 user[splitted_param[0]] = splitted_param[1]
                             except IndexError:
                                 user[splitted_param[0]] = ''
-                    if not with_admin:
+                    if not user or not with_admin:
                         if user.get('name') == ADMIN_NAME:
                             continue
 
                     return_list.append(user)
-        print('LISSSSTTTTTTTTTTTTTTTTTTTTT')
-        print(return_list)
         return return_list
 
     @staticmethod
@@ -103,7 +104,6 @@ class User:
                 user_changed = item
 
             new_users.append(item)
-
         User.create_users(new_users)
         return user_changed
 

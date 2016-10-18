@@ -1,4 +1,5 @@
 import sys
+from getpass import getpass
 from utils.render import (
     clear_screen_before, wait_for_clicking
 )
@@ -8,7 +9,7 @@ from .admin import (
     render_block_user, render_add_limitations
 )
 from user import User
-from getpass import getpass
+from settings import get_cryptor
 
 
 @wait_for_clicking
@@ -35,6 +36,7 @@ def render_change_pass():
             elif answer == 2:
                 render_user_menu()
             elif answer == 3:
+                get_cryptor().encrypt_file()
                 sys.exit()
             render_user_menu()
     else:
@@ -79,6 +81,7 @@ def render_user_menu():
         elif answer == 5:
             render_add_limitations()
         elif answer == 6:
+            get_cryptor().encrypt_file()
             sys.exit()
     else:
         print(' ' * 10 + 'MENU \n'
@@ -92,6 +95,7 @@ def render_user_menu():
         if answer == 1:
             render_change_pass()
         elif answer == 2:
+            get_cryptor().encrypt_file()
             sys.exit()
 
     render_user_menu()

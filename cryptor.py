@@ -57,6 +57,7 @@ class RDSCryptor:
 
         with open(self.passfile_dec, 'rb') as fo:
             plain_text = fo.read()
+        print(plain_text)
         encrypted_text = self.encrypt(plain_text)
         os.remove(self.passfile_dec)
         with open(self.passfile_enc, 'wb') as fo:

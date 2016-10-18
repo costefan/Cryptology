@@ -22,15 +22,13 @@ def render_login():
     password = getpass('Enter your pass: ')
     if User.authenticate(name, password):
         cur_user = User(name, password)
-        print(cur_user.blocked)
-        print(cur_user.name)
         if cur_user.blocked:
             input('Your account was blocked')
             render_menu()
         change_current_user(cur_user)
         render_user_menu()
-
     else:
+        input('There is no user with this name')
         render_menu()
 
 
@@ -39,8 +37,7 @@ def render_login():
 def render_information():
     print('Hi, Author of the first lab is Ovchynnikov Kostiantyn! \n'
           'SoftServe Python Engineer and KPI student \n'
-          'The task was all symbols should be unique \n'
-          'Click something to return menu...')
+          'The task was all symbols should be unique \n')
 
 
 @clear_screen_before
@@ -53,12 +50,16 @@ def render_menu():
         answer = int(input('Enter option: '))
     except Exception:
         render_menu()
+    except BaseException:
+        get_cryptor().encrypt_file()
+        sys.exit()
     if answer == 1:
         render_login()
     elif answer == 2:
         render_information()
+        render_menu()
     elif answer == 3:
-        print(get_cryptor())
+        get_cryptor().encrypt_file()
         sys.exit()
     else:
         render_menu()

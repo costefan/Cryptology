@@ -46,7 +46,8 @@ def render_block_user():
             index + 1, user.get('name'),
             user.get('blocked'), user.get('pass_limit'),
         ))
-    username = str(input('Who do you want to block/unblock? Enter name please: '))
+    username = str(input('Who do you want to block/unblock?'
+                         ' Enter name please: '))
 
     if User.change_user(name=username, change_blocked=True):
         print('Well done!')
