@@ -10,15 +10,14 @@ class User:
         self.name = name
         self.password = password
         self.email = email
-        if name == ADMIN_NAME:
-            self.blocked = False
-            self.pass_limit = False
-        else:
+        self.blocked = False
+        self.pass_limit = False
+        if name != ADMIN_NAME:
             for user in self.get_users(with_admin=True):
                 if (self.name, self.password) == (user.get('name'),
                                                   user.get('password')):
-                    self.blocked = user.get('blocked')
-                    self.pass_limit = user.get('pass_limit')
+                    self.blocked = user.get('blocked', False)
+                    self.pass_limit = user.get('pass_limit', 0)
 
     @property
     def is_admin(self):
@@ -56,6 +55,8 @@ class User:
                                     splitted_param[1] = False
                                 elif splitted_param[1] == 'True':
                                     splitted_param[1] = True
+                                if splitted_param[0] == 'retry_pass':
+                                    splitted_param[1] = int(splitted_param[1])
                                 user[splitted_param[0]] = splitted_param[1]
                             except IndexError:
                                 user[splitted_param[0]] = ''
@@ -82,7 +83,7 @@ class User:
 
     @staticmethod
     def change_user(name, change_blocked=False,
-                    change_pass_limit=False, new_password=None):
+                    change_pass_limit=False, new_password=None, retry_pass=None):
         if name not in [
             item.get('name')
             for item in User.get_users()
@@ -101,15 +102,29 @@ class User:
                     if change_pass_limit else item['pass_limit']
                 item['password'] = new_password \
                     if new_password else item['password']
+                item['retry_pass'] += 1 \
+                    if retry_pass else item['retry_pass']
+                if item['retry_pass'] >= 3:
+                    item['blocked'] = True
                 user_changed = item
 
             new_users.append(item)
         User.create_users(new_users)
-        return user_changed
+        return User(user_changed['name'], user_changed['password'])
 
     @staticmethod
     def check_correct_password(new_pass):
         if len(new_pass) == len(set(new_pass)):
+            return True
+
+        return False
+
+    @staticmethod
+    def with_name(name):
+        if name in [
+                obj.get('name')
+                for obj in User.get_users(with_admin=True)
+        ]:
             return True
 
         return False

@@ -27,6 +27,17 @@ def render_login():
             render_menu()
         change_current_user(cur_user)
         render_user_menu()
+    elif User.with_name(name):
+        user = [
+            item for item in User.get_users(with_admin=True)
+            if item.get('name') == name
+        ][0]
+        if user.get('blocked'):
+            input('Your account was blocked')
+        else:
+            User.change_user(name, retry_pass=True)
+            input('Wrong pass, retry.')
+        render_menu()
     else:
         input('There is no user with this name')
         render_menu()
